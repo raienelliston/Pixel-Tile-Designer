@@ -56,17 +56,23 @@ const PixalCanvas = () => {
     }
 
     const handleOnClick = (e) => {
-        const stage = e.target.getStage();
-        const position = stage.getPointerPosition();
-        const x = Math.floor((position.x + stageX) / pixelSize) * pixelSize;
-        const y = Math.floor((position.y + stageY) / pixelSize) * pixelSize;
-        const color = "black";
+        console.log(JSON.stringify(e))
+        if(leftClick(e)) {
+        const position = stage.getRelativePointerPosition();
+        const x = Math.floor(position.x/ pixelSize) * pixelSize;
+        const y = Math.floor(position.y / pixelSize) * pixelSize;
+        const color = localStorage.getItem("color") || "black";
         const newPixel = { x: x, y: y, color: color };
         console.log("x: " + x + " y: " + y + " color: " + color)
-        console.log(stageX + " " + stageY + " " + stageScale)
         setPixels([...pixels, newPixel]);
         history = [...history, stage.toDataURL()];
-        setHistoryStep(history.length);
+        setHistoryStep(history.length)
+        } elif (rightClick(e)) {
+            const position = stage.getRelativePointerPosition();
+            const x = Math.floor(position.x/ pixelSize) * pixelSize;
+            const y = Math.floor(position.y / pixelSize) * pixelSize;
+            setPixels(pixels.filter(pixel => pixel.x !== x && pixel.y !== y));
+        }
     }
 
     const undo = (e) => {
