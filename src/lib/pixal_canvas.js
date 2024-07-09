@@ -12,13 +12,28 @@ const CanvasWrapper = styled.div`
 
 const PixalCanvas = () => {
     const [pixels, setPixels] = useState([]);
-    const [showGrid, setShowGrid] = useState(true);
     const [pixelSize, setPixelSize] = useState(10);
     const [stageX, setStageX] = useState(0);
     const [stageY, setStageY] = useState(0);
     const [stageScale, setStageScale] = useState(1);
     const [historyStep, setHistoryStep] = useState(0);
     let history = [];
+
+    if (localStorage.getItem("showGrid") === null) {
+        localStorage.setItem("showGrid", "true");
+    }
+
+    const showGrid = localStorage.getItem("showGrid") === "true" ? true : false;
+
+    if (pixels.length === 0) {
+        if (localStorage.getItem("pixels")) {
+            setPixels(JSON.parse(localStorage.getItem("pixels")));
+        } else {
+            localStorage.setItem("pixels", JSON.stringify(pixels));
+        }
+    } else {
+        localStorage.setItem("pixels", JSON.stringify(pixels));
+    }
 
     const onWheel = (e) => {
         e.evt.preventDefault();
@@ -39,20 +54,52 @@ const PixalCanvas = () => {
     }
 
 
-    const undo = () => {
+    const undo = (e) => {
         if (historyStep > 0) {
+            const stage = e.target.getStage();
             setHistoryStep(historyStep - 1);
             stage.clear();
             stage.load(history[historyStep - 1]);
         }
     }
 
-    const redo = () => {
+    const redo = (e) => {
         if (historyStep < history.length) {
+            const stage = e.target.getStage();
             setHistoryStep(historyStep + 1);
             stage.clear();
             stage.load(history[historyStep + 1]);
         }
+    }
+
+    const Grid = () => {
+        if (!showGrid) {
+            return null;
+        }
+        return (
+            <Layer>
+                {[...Array(window.innerWidth / pixelSize).keys()].map((x) => {
+                    return (
+                        <Line
+                            key={x}
+                            points={[x * pixelSize, 0, x * pixelSize, window.innerHeight]}
+                            stroke="black"
+                            strokeWidth={1}
+                        />
+                    );
+                })}
+                {[...Array(window.innerHeight / pixelSize).keys()].map((y) => {
+                    return (
+                        <Line
+                            key={y}
+                            points={[0, y * pixelSize, window.innerWidth, y * pixelSize]}
+                            stroke="black"
+                            strokeWidth={1}
+                        />
+                    );
+                })}
+            </Layer>
+        );
     }
 
     return (
@@ -80,13 +127,7 @@ const PixalCanvas = () => {
                             />
                         );
                     })}
-                    <Rect
-                        x={0}
-                        y={0}
-                        width={100}
-                        height={100}
-                        fill="white"
-                    />
+                    <Grid />
                 </Layer>
             </Stage>
         </CanvasWrapper>
