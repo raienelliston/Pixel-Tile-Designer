@@ -1,4 +1,6 @@
 import React from "react";
+import { useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import styled from "styled-components";
 
 const ToolOverlayWrapper = styled.div`
@@ -41,6 +43,27 @@ const RightOverlayWrapper = styled(ToolOverlayWrapper)`
 `;
 
 const ToolOverlay = () => {
+    const [fileName, setFileName] = useState("");
+    const [colors, setColors] = useState(["black", "white"]);
+
+    if (localStorage.getItem("fileName")) {
+        if (localStorage.getItem("fileName") !== fileName) {
+            setFileName(localStorage.getItem("fileName"));
+        }
+    } else {
+        localStorage.setItem("fileName", "Untitled");
+    }
+
+
+    // All the logic to turn the local storage data into a file
+    const saveFile = () => {
+
+    }
+
+    // All the logic to turn the local storage data into a file that can be used, aka .png
+    const exportFile = () => {
+
+    }
 
     const TopOverlay = () => {
         return (
@@ -51,6 +74,11 @@ const ToolOverlay = () => {
     }
 
     const LeftOverlay = () => {
+
+        const colorPicker = () => {
+
+        }
+
         return (
             <LeftOverlayWrapper>
                 <p>Tool Overlay</p>
