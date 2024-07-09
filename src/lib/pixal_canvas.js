@@ -27,7 +27,9 @@ const PixalCanvas = () => {
 
     if (pixels.length === 0) {
         if (localStorage.getItem("pixels")) {
-            setPixels(JSON.parse(localStorage.getItem("pixels")));
+            if (localStorage.getItem("pixels").length > 0) {
+                // setPixels(JSON.parse(localStorage.getItem("pixels")));
+            }
         } else {
             localStorage.setItem("pixels", JSON.stringify(pixels));
         }
@@ -53,6 +55,19 @@ const PixalCanvas = () => {
         setStageY( -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale)
     }
 
+    const handleOnClick = (e) => {
+        const stage = e.target.getStage();
+        const position = stage.getPointerPosition();
+        const x = Math.floor((position.x + stageX) / pixelSize) * pixelSize;
+        const y = Math.floor((position.y + stageY) / pixelSize) * pixelSize;
+        const color = "black";
+        const newPixel = { x: x, y: y, color: color };
+        console.log("x: " + x + " y: " + y + " color: " + color)
+        console.log(stageX + " " + stageY + " " + stageScale)
+        setPixels([...pixels, newPixel]);
+        history = [...history, stage.toDataURL()];
+        setHistoryStep(history.length);
+    }
 
     const undo = (e) => {
         if (historyStep > 0) {
@@ -81,10 +96,7 @@ const PixalCanvas = () => {
                 {[...Array(window.innerWidth / pixelSize).keys()].map((x) => {
                     return (
                         <Line
-                            key={x}
                             points={[x * pixelSize, 0, x * pixelSize, window.innerHeight]}
-                            stroke="black"
-                            strokeWidth={1}
                         />
                     );
                 })}
@@ -113,6 +125,7 @@ const PixalCanvas = () => {
             x={stageX}
             y={stageY}
             draggable
+            onClick={handleOnClick}
             >
                 <Layer>
                     {pixels.map((pixel, index) => {
