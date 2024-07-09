@@ -6,14 +6,16 @@ const ToolOverlayWrapper = styled.div`
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
+    pointer-events: none;
 `;
 
 const TopOverlayWrapper = styled(ToolOverlayWrapper)`
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -21,6 +23,8 @@ const TopOverlayWrapper = styled(ToolOverlayWrapper)`
 `;
 
 const LeftOverlayWrapper = styled(ToolOverlayWrapper)`
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
     top: 10%;
     left: 0;
     width: 10%;
@@ -28,6 +32,8 @@ const LeftOverlayWrapper = styled(ToolOverlayWrapper)`
 `;
 
 const RightOverlayWrapper = styled(ToolOverlayWrapper)`
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
     top: 10%;
     right: 0;
     width: 10%;
