@@ -5,6 +5,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import styled from "styled-components";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
+import pencilIcon from "../assets/pencilIcon.png";
+import paintIcon from "../assets/paintIcon.png";
 
 const ToolOverlayWrapper = styled.div`
     position: absolute;
@@ -52,6 +54,14 @@ const TitleWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    input {
+        width: 100%;
+        height: 100%;
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 1em;
+    }
 `;
 
 const ToolOverlay = () => {
@@ -196,9 +206,21 @@ const ToolOverlay = () => {
             return null;
         }
 
+        const handleToolChange = (e) => {
+            if (e.target.src === pencilIcon) {
+                localStorage.setItem("tool", "pencil");
+            } else if (e.target.src === paintIcon) {
+                localStorage.setItem("tool", "paint");
+            }
+        }
+
         return (
             <LeftOverlayWrapper>
                 <p>Tool Overlay</p>
+                <div className="toolPicker">
+                    <img src={pencilIcon} alt="Pencil Icon" onClick={handleToolChange}/>
+                    <img src={paintIcon} alt="Paint Icon" onClick={handleToolChange}/>
+                </div>
                 {colors.map((color, index) => {
                     return (
                         <ColorPicker color={color} index={index} />
