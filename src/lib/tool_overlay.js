@@ -1,7 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import styled from "styled-components";
+import { keyboard } from "@testing-library/user-event/dist/keyboard";
 
 const ToolOverlayWrapper = styled.div`
     position: absolute;
@@ -22,6 +25,7 @@ const TopOverlayWrapper = styled(ToolOverlayWrapper)`
     left: 0;
     width: 100%;
     height: 10%;
+    pointer-events: all;
 `;
 
 const LeftOverlayWrapper = styled(ToolOverlayWrapper)`
@@ -31,6 +35,7 @@ const LeftOverlayWrapper = styled(ToolOverlayWrapper)`
     left: 0;
     width: 10%;
     height: 90%;
+    pointer-events: all;
 `;
 
 const RightOverlayWrapper = styled(ToolOverlayWrapper)`
@@ -40,6 +45,13 @@ const RightOverlayWrapper = styled(ToolOverlayWrapper)`
     right: 0;
     width: 10%;
     height: 90%;
+    pointer-events: all;
+`;
+
+const TitleWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 const ToolOverlay = () => {
@@ -116,27 +128,87 @@ const ToolOverlay = () => {
         window.URL.revokeObjectURL(url);
     }
 
+    // Component that shows at the top of the webpage
     const TopOverlay = () => {
+        const [anchorEl, setAnchorEl] = useState(null);
+        const open = Boolean(anchorEl);
+
+        const handleTitleChange = (e) => {
+            if (keyboard.key === "Enter") {
+                localStorage.setItem("fileName", e.target.value);
+            }
+            setFileName(e.target.value);
+        }
+
+        const handleClick = (event) => {
+            setAnchorEl(event.currentTarget);
+        };
+
+        const handleClose = () => {
+            setAnchorEl(null);
+        }
+
         return (
             <TopOverlayWrapper>
-                <p>Tool Overlay</p>
+                <TitleWrapper>
+                    <input type="text" value = {fileName} onChange={handleTitleChange} />
+                </TitleWrapper>
+                <input type="button" value="File" onClick={handleClick} />
+                <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                    <MenuItem onClick={saveFile}>Save</MenuItem>
+                    <MenuItem> <input type="file" onChange={loadFile} /> </MenuItem>
+                    <MenuItem onClick={exportFile}>Export</MenuItem>
+                </Menu>
             </TopOverlayWrapper>
         );
     }
 
+    // Component that shows on the left side of the webpage
     const LeftOverlay = () => {
+        const [isOpen, setIsOpen] = useState(false);
 
-        const colorPicker = () => {
+        const ColorPicker = (color, index) => {
+            if (isOpen) {
 
+                const handleChange = (e) => {
+                    var newColors = colors;
+                    newColors[index] = e.target.value;
+                    setColors(newColors);
+                    localStorage.setItem("colors", newColors);
+                }
+
+                const Popover = () => {
+                    if (isOpen) {
+                        return (
+                            <HexColorPicker color={color} onChange={handleChange}/>
+                        );
+                    }
+                    return null;
+                }
+
+                return (
+                    <div className="color-picker">
+                        <div className="swatch" style={{ backgroundColor: color }} onClick={setIsOpen(true)}/>
+                        <Popover />
+                    </div>
+                );
+            }
+            return null;
         }
 
         return (
             <LeftOverlayWrapper>
                 <p>Tool Overlay</p>
+                {colors.map((color, index) => {
+                    return (
+                        <ColorPicker color={color} index={index} />
+                    );
+                })}
             </LeftOverlayWrapper>
         );
     }
 
+    // Component that shows on the right side of the webpage
     const RightOverlay = () => {
         return (
             <RightOverlayWrapper>
