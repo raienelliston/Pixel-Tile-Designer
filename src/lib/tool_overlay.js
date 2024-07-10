@@ -20,6 +20,18 @@ const ToolOverlayWrapper = styled.div`
     pointer-events: none;
 `;
 
+const FileSettingsOverlayWrapper = styled(ToolOverlayWrapper)`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center
+    z-index: 101;
+`;
+
 const TopOverlayWrapper = styled(ToolOverlayWrapper)`
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
@@ -67,6 +79,7 @@ const TitleWrapper = styled.div`
 const ToolOverlay = () => {
     const [fileName, setFileName] = useState("");
     const [colors, setColors] = useState(["black", "white"]);
+    const [fileOptionsOverlay, setFileOptionsOverlay] = useState(false);
 
     if (localStorage.getItem("fileName")) {
         if (localStorage.getItem("fileName") !== fileName) {
@@ -138,6 +151,17 @@ const ToolOverlay = () => {
         window.URL.revokeObjectURL(url);
     }
 
+    const FileSettingsOverlay = () => {
+        if (fileOptionsOverlay) {
+            return (
+                <FileSettingsOverlayWrapper>
+                    <p>File Settings</p>
+                </FileSettingsOverlayWrapper>
+            );
+        }
+        return null;
+    }
+
     // Component that shows at the top of the webpage
     const TopOverlay = () => {
         const [anchorEl, setAnchorEl] = useState(null);
@@ -165,6 +189,7 @@ const ToolOverlay = () => {
                 </TitleWrapper>
                 <input type="button" value="File" onClick={handleClick} />
                 <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                    <MenuItem onClick={fileOptionsOverlay}>File Options</MenuItem>
                     <MenuItem onClick={saveFile}>Save</MenuItem>
                     <MenuItem> <input type="file" onChange={loadFile} /> </MenuItem>
                     <MenuItem onClick={exportFile}>Export</MenuItem>
@@ -176,6 +201,14 @@ const ToolOverlay = () => {
     // Component that shows on the left side of the webpage
     const LeftOverlay = () => {
         const [isOpen, setIsOpen] = useState(false);
+        const [selectedTool, setSelectedTool] = useState(localStorage.getItem("tool") || "pencil");
+        
+        if (localStorage.getItem("tool") === null) {
+            localStorage.setItem("tool", "pencil");
+        }
+        if (localStorage.getItem("tool") !== selectedTool) {
+            setSelectedTool(localStorage.getItem("tool"));
+        }
 
         const ColorPicker = (color, index) => {
             if (isOpen) {
@@ -212,20 +245,23 @@ const ToolOverlay = () => {
             } else if (e.target.src === paintIcon) {
                 localStorage.setItem("tool", "paint");
             }
+            setSelectedTool(localStorage.getItem("tool"));
         }
 
         return (
             <LeftOverlayWrapper>
-                <p>Tool Overlay</p>
                 <div className="toolPicker">
                     <img src={pencilIcon} alt="Pencil Icon" onClick={handleToolChange}/>
                     <img src={paintIcon} alt="Paint Icon" onClick={handleToolChange}/>
                 </div>
-                {colors.map((color, index) => {
-                    return (
-                        <ColorPicker color={color} index={index} />
-                    );
-                })}
+                <div>
+                    {colors.map((color, index) => {
+                        return (
+                            <ColorPicker color={color} index={index} />
+                        );
+                    })}
+                </div>
+
             </LeftOverlayWrapper>
         );
     }
@@ -241,6 +277,7 @@ const ToolOverlay = () => {
 
     return (
         <ToolOverlayWrapper>
+            <FileSettingsOverlay />
             <TopOverlay />
             <LeftOverlay />
             <RightOverlay />
