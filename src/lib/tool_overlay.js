@@ -57,12 +57,63 @@ const ToolOverlay = () => {
 
     // All the logic to turn the local storage data into a file
     const saveFile = () => {
+        const saveFileData = JSON.stringify({
+            fileName: localStorage.getItem("fileName"),
+            pixels: JSON.parse(localStorage.getItem("pixels")),
+            colors: localStorage.getItem("colors"),
+        });
 
+        const blob = new Blob([saveFileData], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = localStorage.getItem("fileName") + ".JSON";
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+            
+    }
+
+    const loadFile = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const fileData = JSON.parse(e.target.result);
+
+            localStorage.setItem("fileName", fileData.fileName);
+            localStorage.setItem("pixels", JSON.stringify(fileData.pixels));
+            localStorage.setItem("colors", fileData.colors);
+
+            window.location.reload();
+        }
+
+        reader.readAsText(file);
     }
 
     // All the logic to turn the local storage data into a file that can be used, aka .png
     const exportFile = () => {
 
+        function convertToPNG(pixels) {
+            return
+        }
+
+        const exportFileData = convertToPNG(JSON.parse(localStorage.getItem("pixels")));
+
+        const blob = new Blob([exportFileData], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = localStorage.getItem("fileName") + ".JSON";
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
     }
 
     const TopOverlay = () => {
